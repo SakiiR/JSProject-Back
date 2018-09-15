@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const routes = require('./api/route/index');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.API_PORT || config['API_PORT'];
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/ChatRouletteDB');
