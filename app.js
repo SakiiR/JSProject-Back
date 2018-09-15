@@ -3,9 +3,11 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var db = require('./db');
+var config = require('./config');
+
 global.__root   = __dirname + '/'; 
 
-const API_PORT = process.env.API_PORT || 4242;
+const WS_PORT = process.env.WS_PORT || config['WS_PORT'];
 
 app.get('/api', function (req, res) {
   res.status(200).send('API works.');
@@ -91,8 +93,8 @@ io.on('connection', function(socket) {
 	});
 });
 
-http.listen(API_PORT, function() {
-	console.log(`#BalanceTonPort: *:${API_PORT}`);
+http.listen(WS_PORT, function() {
+	console.log(`#BalanceTonPort: *:${WS_PORT}`);
 });
 
 var AuthController = require(__root + 'auth/AuthController');
