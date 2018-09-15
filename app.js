@@ -29,7 +29,7 @@ io.on('connection', function(socket) {
 	console.log('weshin');
 	socket.emit('message', 'Connexion OK');
 	// when the client emits 'adduser', this listens and executes
-	socket.on('adduser', function(username, room) {
+	socket.on('addUser', function(username, room) {
 		// store the username in the socket session for this client
 		socket.username = username;
 		// store the room name in the socket session for this client
@@ -50,7 +50,7 @@ io.on('connection', function(socket) {
 	});
 
 	// when the client emits 'sendchat', this listens and executes
-	socket.on('sendchat', function (data) {
+	socket.on('sendChat', function (data) {
 		Message.create({
 	        id_sender : req.body.id_sender,
 	        id_room : req.body.id_room,
