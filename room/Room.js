@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 
 var RoomSchema = new mongoose.Schema({
     id_creator: {type: Number, required: true},
-    status: {type: String, enum: ['pending', 'active', 'deleted'], default: 'pending'},
     name: {type: String, required: true},
     description: {type: String, required: true}
   }, 
