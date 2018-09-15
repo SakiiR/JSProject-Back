@@ -5,6 +5,8 @@ var io = require('socket.io')(http);
 var db = require('./db');
 global.__root   = __dirname + '/'; 
 
+const API_PORT = process.env.API_PORT || 4242;
+
 app.get('/api', function (req, res) {
   res.status(200).send('API works.');
 });
@@ -89,8 +91,8 @@ io.on('connection', function(socket) {
 	});
 });
 
-http.listen(4242, function() {
-	console.log('#BalanceTonPort: *:4242');
+http.listen(API_PORT, function() {
+	console.log(`#BalanceTonPort: *:${API_PORT}`);
 });
 
 var UserController = require(__root + 'user/UserController');
