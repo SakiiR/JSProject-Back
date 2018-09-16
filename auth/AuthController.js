@@ -17,7 +17,7 @@ var config = require('../config'); // get config file
 
 router.post('/login', function(req, res) {
 
-  User.findOne({ email: req.body.email }, function (err, user) {
+  User.findOne({ username: req.body.username }, function (err, user) {
     if (err) return res.status(500).send('Error on the server.');
     if (!user) return res.status(404).send('No user found.');
     
@@ -47,9 +47,7 @@ router.post('/register', function(req, res) {
 
   User.create({
     username: req.body.username,
-    email: req.body.email,
-    password: hashedPassword,
-    status: req.body.status
+    password: hashedPassword
   }, 
   function (err, user) {
     if (err) return res.status(500).send("There was a problem registering the user." + err);

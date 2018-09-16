@@ -10,7 +10,7 @@ function verifyToken(req, res, next) {
       .status(401)
       .send({ auth: false, message: "No token provided, epic fail" });
 
-  Token.findByValue(token, function(err, tokenRes) {
+  Token.findOne({value: token}, function(err, tokenRes) {
     if (err) return res.status(401).send("Unauthorized.");
     if (!tokenRes) return res.status(401).send("Unauthorized.");
   });
