@@ -10,6 +10,7 @@ const authMiddleware = async (ctx, next) => {
       const decoded = await jwt.verify(token, config.secret);
       const user = await User.findOne({ username: decoded.username });
       if (user === null) throw "error";
+      ctx.state.user = user;
     } catch (err) {
       throw "Invalid token";
     }
