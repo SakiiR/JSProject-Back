@@ -1,28 +1,23 @@
 import App from "./App";
 import config from "./config";
+import Room from "./models/Room";
+import Message from "./models/Message";
 
 const app = new App();
 
 const Koa = require("koa"),
-  route = require("koa-route"),
   websockify = require("koa-websocket");
-
 const socket = websockify(new Koa());
-
-const Room = require("./models/Room");
-const Message = require("./models/Message");
 
 let usernames = {};
 let rooms = [];
 
 app.start();
 
-// Room.find({}, async (err, rooms) => {
-//   for (var i = 0; i != rooms.length; i++) rooms.push(rooms[i]);
-// });
-
 // Using routes
-socket.ws.use(ctx => {
+socket.ws.use(async ctx => {
+  const roomss = await Room.find({});
+  for (var i = 0; i != roomss.length; i++) rooms.push(roomss[i]);
   console.log("weshin");
   // `ctx` is the regular koa context created from the `ws` onConnection `socket.upgradeReq` object.
   // the websocket is added to the context on `ctx.websocket`.
@@ -57,8 +52,8 @@ socket.ws.use(ctx => {
   });
 
   // when the client emits 'sendchat', this listens and executes
-  ctx.websocket.on("sendChat", () => {
-    Message.create(
+  ctx.websocket.on("sendChat", async () => {
+    await Message.create(
       {
         id_sender: ctx.req.body.id_sender,
         id_room: ctx.req.body.id_room,
