@@ -68,11 +68,11 @@ class RouteRoom extends Route {
       const body = this.body(ctx);
       const room = await Room.findOne({ name: body.name });
       if (room !== null) throw "This room already exists !";
-      const salt = "";
-      const password = "";
+      let salt = "";
+      let password = "";
       if (body.private === true) {
-        const salt = generateSalt();
-        const password = await hashPassword(body.password + salt);
+        salt = generateSalt();
+        password = await hashPassword(body.password + salt);
       }
       const result = await Room.create({
         creator: body.creator,

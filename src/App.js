@@ -63,7 +63,7 @@ export default class App extends AppBase {
       logger(), // gives detailed logs of each request made on the API
       addDefaultBody(), // if no body is present, put an empty object "{}" in its place.
       compress({}), // compresses requests made to the API
-      RateLimit.middleware({ interval: { min: 1 }, max: 100 }) // this will limited every user to call a maximum of 100 request per minute,
+      RateLimit.middleware({ interval: { min: 1 }, max: 100 }) // this will limit every user to call a maximum of 100 request per minute,
     ]);
 
     super.mountFolder(join(__dirname, "routes"), "/"); // adds a folder to scan for route files
