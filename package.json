@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "ajv": "^6.5.4",
+    "js-sha512": "^0.8.0",
     "jsonwebtoken": "^8.3.0",
     "koa-route": "^3.2.0",
     "koa-smart": "^2.0.2",
@@ -26,7 +27,6 @@
     "minimatch": "^3.0.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "sha512": "0.0.1",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
