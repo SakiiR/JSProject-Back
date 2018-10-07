@@ -36,6 +36,8 @@ export default class RouteAuth extends Route {
         }
       };
     } catch (err) {
+      if (typeof err !== "string")
+        return this.send(ctx, 401, "Unknown error ...", null);
       return this.send(ctx, 401, err, null);
     }
     this.sendOk(ctx, response, "Successfully generated your token");
@@ -62,6 +64,8 @@ export default class RouteAuth extends Route {
       if (result === null)
         return this.send(ctx, 403, "Failed to create the user...");
     } catch (err) {
+      if (typeof err !== "string")
+        return this.send(ctx, 401, "Unknown error ...", null);
       return this.send(ctx, 401, err, null);
     }
     this.sendOk(ctx, null, "User created");

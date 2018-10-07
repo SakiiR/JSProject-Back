@@ -9,7 +9,8 @@ const roomSchema = new Schema({
   },
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   description: {
     type: String,
@@ -21,11 +22,11 @@ const roomSchema = new Schema({
   },
   password: {
     type: String,
-    required: true
+    required: false
   },
   salt: {
     type: String,
-    required: true
+    required: false
   }
 });
 
