@@ -2,7 +2,7 @@ import { Types } from "koa-smart";
 import Route from "./Route";
 import Room from "../models/Room";
 import Message from "../models/Message";
-import { hashPassword, generateSalt } from "../utils/hash";
+import { hashPassword, generateSalt, compareHash } from "../utils/hash";
 import authMiddleware from "../middlewares/Auth";
 
 @Route.Route({
@@ -18,10 +18,8 @@ class RouteRoom extends Route {
   })
   async list(ctx) {
     let response = null;
-    const error = "No room found";
     try {
-      const rooms = await Room.find({});
-      if (rooms === null) throw error;
+      const rooms = await Room.find({}).select("-password -salt");
       response = {
         rooms: rooms
       };
@@ -32,40 +30,47 @@ class RouteRoom extends Route {
   }
 
   @Route.Get({
-    path: "/rooms/:id/messages"
+    path: "/rooms/:id/messages",
+    bodyType: Types.object().keys({
+      password: Types.string()
+    })
   })
   async get(ctx) {
-    let response = null;
-    const error = "No message found";
+    const room_id = ctx.params.id;
+    const password = this.body(ctx).password;
     try {
-      const messages = await Message.find({ room: ctx.params.id });
-      if (messages === null) throw error;
-      response = {
-        messages: messages
-      };
+      const room = await Room.findOne({ _id: room_id });
+      if (
+        room.private &&
+        compareHash(password + room.salt, room.password) === false
+      )
+        throw "Bad room password";
+      const messages = (await Message.find({ room: room_id })) || [];
+      return this.sendOk(
+        ctx,
+        { messages },
+        "Successfully got messages from room " + room.name
+      );
     } catch (err) {
-      return this.send(ctx, 404, err, null);
+      if (typeof err !== "string")
+        return this.send(ctx, 401, "Unknown error ...", null);
+      return this.send(ctx, 401, err, null);
     }
-    this.sendOk(
-      ctx,
-      response,
-      "Successfully read messages from room " + ctx.params.id
-    );
   }
 
   @Route.Post({
     path: "/rooms/",
     bodyType: Types.object().keys({
-      creator: Types.number()
-        .integer()
-        .required(),
       name: Types.string().required(),
-      description: Types.string().required()
+      description: Types.string().required(),
+      private: Types.boolean().required(),
+      password: Types.string()
     })
   })
   async create(ctx) {
     try {
       const body = this.body(ctx);
+      const creator = ctx.state.user._id;
       const room = await Room.findOne({ name: body.name });
       if (room !== null) throw "This room already exists !";
       let salt = "";
@@ -81,19 +86,22 @@ class RouteRoom extends Route {
             "If the room is private, you must supply a non empty password."
           );
       }
-      const result = await Room.create({
-        creator: body.creator,
+      const result = (await Room.create({
+        creator: creator,
         name: body.name,
-        description: body.description,
+        description: body.description || "No description for " + body.name,
         private: body.private,
         password: password,
         salt: salt
-      });
-      if (result === null) return this.send(ctx, 403, "Failed to create room");
+      })).toObject();
+      delete result.password, result.salt;
+      if (result === null) throw "Failed to create room ...";
+      return this.sendOk(ctx, result, "Room Created!");
     } catch (err) {
+      if (typeof err !== "string")
+        return this.send(ctx, 401, "Unknown error ...", null);
       return this.send(ctx, 401, err, null);
     }
-    this.sendOk(ctx, null, "Room created");
   }
 
   @Route.Delete({
