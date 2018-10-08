@@ -71,8 +71,15 @@ class RouteRoom extends Route {
       let salt = "";
       let password = "";
       if (body.private === true) {
-        salt = generateSalt();
-        password = await hashPassword(body.password + salt);
+        if (body.password !== null) {
+          salt = generateSalt();
+          password = await hashPassword(body.password + salt);
+        } else
+          return this.send(
+            ctx,
+            403,
+            "If the room is private, you must supply a non empty password."
+          );
       }
       const result = await Room.create({
         creator: body.creator,
@@ -97,7 +104,7 @@ class RouteRoom extends Route {
     try {
       const rooms = await Room.findByIdAndRemove({ id: ctx.params.id });
       if (rooms === null)
-        return this.send(ctx, 403, "Failed to retrieve rooms to delete");
+        return this.send(ctx, 403, "Failed to retrieve room to delete");
       response["rooms"] = rooms;
     } catch (err) {
       return this.send(ctx, 404, err, null);
