@@ -14,7 +14,7 @@ class RouteRoom extends Route {
   }
 
   @Route.Get({
-    path: "/rooms/"
+    path: ""
   })
   async list(ctx) {
     let response = null;
@@ -29,23 +29,47 @@ class RouteRoom extends Route {
     this.sendOk(ctx, response, "Successfully read rooms");
   }
 
-  @Route.Get({
-    path: "/rooms/:id/messages",
+  @Route.Post({
+    path: "/:id/join",
+    bodyType: Types.object().keys({
+      password: Types.string().required()
+    })
+  })
+  async joinRoom(ctx) {
+    const error = "Bad Room password";
+    try {
+      const body = this.body(ctx);
+      const room = await Room.findOne({ _id: ctx.params.id });
+      if (room === null) throw "Room not found";
+      if (room.private) {
+        const matched = compareHash(body.password + room.salt, room.password);
+        if (!matched) throw error;
+      }
+    } catch (err) {
+      if (typeof err !== "string")
+        return this.send(ctx, 401, "Unknown error ...", null);
+      return this.send(ctx, 401, err, null);
+    }
+    this.sendOk(ctx, null, "Successfully connected to the room");
+  }
+
+  @Route.Post({
+    path: "/:id/messages",
     bodyType: Types.object().keys({
       password: Types.string()
     })
   })
-  async get(ctx) {
-    const room_id = ctx.params.id;
+  async post(ctx) {
     const password = this.body(ctx).password;
     try {
-      const room = await Room.findOne({ _id: room_id });
+      const room = await Room.findOne({ _id: ctx.params.id });
+      if (room === null) throw "Room not found";
       if (
         room.private &&
         compareHash(password + room.salt, room.password) === false
       )
         throw "Bad room password";
-      const messages = (await Message.find({ room: room_id })) || [];
+      const messages = (await Message.find({ room: ctx.params.id })) || [];
       return this.sendOk(
         ctx,
         { messages },
@@ -59,7 +83,7 @@ class RouteRoom extends Route {
   }
 
   @Route.Post({
-    path: "/rooms/",
+    path: "",
     bodyType: Types.object().keys({
       name: Types.string().required(),
       description: Types.string().required(),
@@ -105,12 +129,12 @@ class RouteRoom extends Route {
   }
 
   @Route.Delete({
-    path: "/rooms/:id"
+    path: "/:id"
   })
   async delete(ctx) {
     let response = {};
     try {
-      const rooms = await Room.findByIdAndRemove({ id: ctx.params.id });
+      const rooms = await Room.findByIdAndRemove(ctx.params.id);
       if (rooms === null)
         return this.send(ctx, 403, "Failed to retrieve room to delete");
       response["rooms"] = rooms;
