@@ -3,11 +3,10 @@ import config from "./config";
 import Room from "./models/Room";
 import Message from "./models/Message";
 
-const app = new App();
-
 const Koa = require("koa"),
   websockify = require("koa-websocket");
 const socket = websockify(new Koa());
+const app = new App();
 
 let usernames = {};
 let rooms = [];
