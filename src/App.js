@@ -14,6 +14,7 @@ import {
   RateLimit,
   RateLimitStores
 } from "koa-smart/middlewares";
+const locale = require("koa-locale");
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
@@ -47,6 +48,8 @@ export default class App extends AppBase {
     // Eg:
     //    const models = await getModels()
     //    this.routeParam.models = models
+
+    //locale(this.koaApp);
 
     // we add the relevant middlewares to our API
     super.addMiddlewares([

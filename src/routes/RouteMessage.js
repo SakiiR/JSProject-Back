@@ -3,6 +3,7 @@ import Route from "./Route";
 import User from "../models/User";
 import Room from "../models/Room";
 import Message from "../models/Message";
+import { compareHash } from "../utils/hash";
 import authMiddleware from "../middlewares/Auth";
 
 @Route.Route({
@@ -14,24 +15,25 @@ class RouteMessage extends Route {
   }
 
   @Route.Post({
-    path: "/messages/",
+    path: "",
     bodyType: Types.object().keys({
-      from: Types.number()
-        .integer()
-        .required(),
+      from: Types.string().required(),
       text: Types.string().required(),
-      room: Types.number()
-        .integer()
-        .required()
+      room: Types.string().required(),
+      password: Types.string().required()
     })
   })
   async create(ctx) {
     try {
       const body = this.body(ctx);
-      const room = await Room.findOne({ id: ctx.params.room });
-      if (room !== null) throw "Room not found";
-      const user = await User.findOne({ id: ctx.params.room });
-      if (user !== null) throw "User not found";
+      const room = await Room.findOne({ _id: body.room });
+      if (room === null) throw "Room not found";
+      if (room.private) {
+        const matched = compareHash(body.password + room.salt, room.password);
+        if (!matched) throw "Bad room password";
+      }
+      const user = await User.findOne({ _id: body.from });
+      if (user === null) throw "User not found";
       const result = await Message.create({
         from: body.from,
         text: body.text,
@@ -46,12 +48,12 @@ class RouteMessage extends Route {
   }
 
   @Route.Delete({
-    path: "/messages/:id"
+    path: "/:id"
   })
   async read(ctx) {
     const error = "This message doesn't exist";
     try {
-      const message = await Message.findByIdAndRemove({ id: ctx.params.id });
+      const message = await Message.findByIdAndRemove(ctx.params.id);
       if (message === null) throw error;
     } catch (err) {
       return this.send(ctx, 404, err, null);

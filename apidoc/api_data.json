@@ -86,7 +86,7 @@
   },
   {
     "type": "delete",
-    "url": "/message/messages/:id",
+    "url": "/message/:id",
     "title": "",
     "group": "Message",
     "permission": [
@@ -95,13 +95,13 @@
       }
     ],
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/message/messages/-id.js",
+    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/message/-id.js",
     "groupTitle": "Message",
-    "name": "DeleteMessageMessagesId"
+    "name": "DeleteMessageId"
   },
   {
     "type": "post",
-    "url": "/message/messages",
+    "url": "/message",
     "title": "",
     "group": "Message",
     "permission": [
@@ -114,10 +114,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "String",
             "optional": false,
             "field": "from",
-            "description": "<p>It should be a number.</p>"
+            "description": "<p>It should be a string.</p>"
           },
           {
             "group": "Parameter",
@@ -128,22 +128,29 @@
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "String",
             "optional": false,
             "field": "room",
-            "description": "<p>It should be a number.</p>"
+            "description": "<p>It should be a string.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>It should be a string.</p>"
           }
         ]
       }
     },
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/message/messages.js",
+    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/message.js",
     "groupTitle": "Message",
-    "name": "PostMessageMessages"
+    "name": "PostMessage"
   },
   {
     "type": "delete",
-    "url": "/room/rooms/:id",
+    "url": "/room/:id",
     "title": "",
     "group": "Room",
     "permission": [
@@ -152,28 +159,13 @@
       }
     ],
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/rooms/-id.js",
+    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id.js",
     "groupTitle": "Room",
-    "name": "DeleteRoomRoomsId"
-  },
-  {
-    "type": "get",
-    "url": "/room/rooms/:id/messages",
-    "title": "",
-    "group": "Room",
-    "permission": [
-      {
-        "name": "public"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/rooms/-id/messages.js",
-    "groupTitle": "Room",
-    "name": "GetRoomRoomsIdMessages"
+    "name": "DeleteRoomId"
   },
   {
     "type": "post",
-    "url": "/room/rooms",
+    "url": "/room",
     "title": "",
     "group": "Room",
     "permission": [
@@ -184,13 +176,6 @@
     "parameter": {
       "fields": {
         "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "creator",
-            "description": "<p>It should be a number.</p>"
-          },
           {
             "group": "Parameter",
             "type": "String",
@@ -204,13 +189,83 @@
             "optional": false,
             "field": "description",
             "description": "<p>It should be a string.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "private",
+            "description": "<p>It should be a boolean or one of: (&quot;true&quot;, &quot;false&quot;).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "password",
+            "description": "<p>It should be a string.</p>"
           }
         ]
       }
     },
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/rooms.js",
+    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room.js",
     "groupTitle": "Room",
-    "name": "PostRoomRooms"
+    "name": "PostRoom"
+  },
+  {
+    "type": "post",
+    "url": "/room/:id/join",
+    "title": "",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "public"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>It should be a string.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id/join.js",
+    "groupTitle": "Room",
+    "name": "PostRoomIdJoin"
+  },
+  {
+    "type": "post",
+    "url": "/room/:id/messages",
+    "title": "",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "public"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "password",
+            "description": "<p>It should be a string.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id/messages.js",
+    "groupTitle": "Room",
+    "name": "PostRoomIdMessages"
   }
 ]
