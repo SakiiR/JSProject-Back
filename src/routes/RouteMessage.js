@@ -1,9 +1,9 @@
 import Route from "./Route";
 import Message from "../models/Message";
-import { isAuthenticated } from "../utils/accesses";
+import authMiddleware from "../middlewares/Auth";
 
 @Route.Route({
-  accesses: [isAuthenticated]
+  middlewares: [authMiddleware]
 })
 class RouteMessage extends Route {
   constructor(params) {

@@ -9,7 +9,6 @@ import {
   cors,
   helmet,
   addDefaultBody,
-  handleError,
   logger,
   RateLimit,
   RateLimitStores
@@ -43,10 +42,6 @@ export default class App extends AppBase {
   }
 
   async start() {
-    this.koaApp.on("error", (err, ctx) => {
-      console.log("An error occurred !");
-      console.log(err, ctx);
-    });
     // we add the relevant middlewares to our API
     super.addMiddlewares([
       cors({ credentials: true }), // add cors headers to the requests
@@ -64,7 +59,10 @@ export default class App extends AppBase {
           await next();
         } catch (e) {
           ctx.status = e.status || 500;
-          ctx.body = { message: e.message || ctx.i18n.__("Unknown error") };
+          ctx.body = {
+            message: e.message || e || ctx.i18n.__("Unknown error")
+          };
+          if (ctx.status === 500) console.error(e);
         }
       }, // helps handling error codes
       logger(), // gives detailed logs of each request made on the API
