@@ -4,5 +4,8 @@
 	"param required:": "param required:",
 	"hello": "hello",
 	"Please contact the support": "Please contact the support",
-	"This room does not exist": "This room does not exist"
+	"This room does not exist": "This room does not exist",
+	"User already exists": "User already exists",
+	"User Created": "User Created",
+	"Successfully generated your token": "Successfully generated your token"
 }

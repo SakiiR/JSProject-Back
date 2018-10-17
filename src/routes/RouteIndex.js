@@ -1,17 +1,16 @@
 import Route from "./Route";
 import packageJson from "../../package.json";
-import authMiddleware from "../middlewares/Auth";
+import { isAuthenticated } from "../utils/accesses";
 
 @Route.Route({
   routeBase: "/",
-  middlewares: [authMiddleware]
+  accesses: [isAuthenticated]
 })
 class RouteIndex extends Route {
   constructor(params) {
     super({ ...params });
   }
 
-  // http://localhost:3000/
   @Route.Get({ path: "/" })
   index(ctx) {
     this.sendOk(ctx, {

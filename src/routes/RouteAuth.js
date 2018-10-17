@@ -18,29 +18,24 @@ export default class RouteAuth extends Route {
     })
   })
   async authenticate(ctx) {
-    let response = null;
-    const error = "Bad Username or Password";
-    try {
-      const body = this.body(ctx);
-      const user = await User.findOne({ username: body.username });
-      if (user === null) throw error;
-      const matched = compareHash(body.password + user.salt, user.password);
-      if (!matched) throw error;
-      const token = jwt.sign({ username: user.username }, config.secret, {
-        expiresIn: "1h"
-      });
-      response = {
+    const body = this.body(ctx);
+    const user = await User.findOne({ username: body.username });
+    if (user === null) ctx.throw(401, "Bad username or password", "test");
+    const matched = compareHash(body.password + user.salt, user.password);
+    if (matched !== true) ctx.throw(401, "Bad username or password", "test");
+    const token = jwt.sign({ username: user.username }, config.secret, {
+      expiresIn: "1h"
+    });
+    this.sendOk(
+      ctx,
+      {
         user: {
           token,
           username: user.username
         }
-      };
-    } catch (err) {
-      if (typeof err !== "string")
-        return this.send(ctx, 401, "Unknown error ...", null);
-      return this.send(ctx, 401, err, null);
-    }
-    this.sendOk(ctx, response, "Successfully generated your token");
+      },
+      ctx.i18n.__("Successfully generated your token")
+    );
   }
 
   @Route.Post({
@@ -51,23 +46,17 @@ export default class RouteAuth extends Route {
     })
   })
   async register(ctx) {
-    try {
-      const body = this.body(ctx);
-      const user = await User.findOne({ username: body.username });
-      if (user !== null) throw "Username is already taken!";
-      const salt = generateSalt();
-      const result = await User.create({
-        username: body.username,
-        password: await hashPassword(body.password + salt),
-        salt: salt
-      });
-      if (result === null)
-        return this.send(ctx, 403, "Failed to create the user...");
-    } catch (err) {
-      if (typeof err !== "string")
-        return this.send(ctx, 401, "Unknown error ...", null);
-      return this.send(ctx, 401, err, null);
-    }
-    this.sendOk(ctx, null, "User created");
+    const body = this.body(ctx);
+    const user = await User.findOne({ username: body.username });
+    if (user !== null) ctx.throw(409, ctx.i18n.__("User already exists"));
+    const salt = generateSalt();
+    const result = await User.create({
+      username: body.username,
+      password: await hashPassword(body.password + salt),
+      salt: salt
+    });
+    if (result === null)
+      ctx.throw(500, ctx.i18n.__("Failed to create the user"));
+    ctx.throw(201, ctx.i18n.__("User Created"));
   }
 }

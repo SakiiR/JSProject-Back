@@ -5,21 +5,11 @@ import User from "../models/User";
 const authMiddleware = async (ctx, next) => {
   try {
     const token = ctx.request.header.authorization;
-    if (token == null) throw "Token not specified";
-    try {
-      const decoded = await jwt.verify(token, config.secret);
-      const user = await User.findOne({ username: decoded.username });
-      if (user === null) throw "error";
-      ctx.state.user = user;
-    } catch (err) {
-      throw "Invalid token";
-    }
-  } catch (err) {
-    if (typeof err === "string") {
-      ctx.status = 401;
-      ctx.body = { message: err };
-      return null;
-    } else console.log(err);
+    const decoded = await jwt.verify(token, config.secret);
+    const user = await User.findOne({ username: decoded.username });
+    ctx.state.user = user;
+  } catch (e) {
+    ctx.state.user = null;
   }
   return await next();
 };

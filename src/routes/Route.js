@@ -1,6 +1,10 @@
-import { Route as RouteBase } from 'koa-smart';
+import { Route as RouteBase } from "koa-smart";
+import authMiddleware from "../middlewares/Auth";
 
-export default class Route extends RouteBase {
+@RouteBase.Route({
+  middlewares: [authMiddleware]
+})
+class Route extends RouteBase {
   constructor(params) {
     super(params);
   }
@@ -11,3 +15,5 @@ export default class Route extends RouteBase {
     await super.beforeRoute(ctx, infos, next);
   }
 }
+
+export default Route;
