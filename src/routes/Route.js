@@ -1,9 +1,5 @@
 import { Route as RouteBase } from "koa-smart";
-import authMiddleware from "../middlewares/Auth";
 
-@RouteBase.Route({
-  middlewares: [authMiddleware]
-})
 class Route extends RouteBase {
   constructor(params) {
     super(params);

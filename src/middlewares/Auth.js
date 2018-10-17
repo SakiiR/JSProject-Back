@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 import User from "../models/User";
 
-const authMiddleware = async (ctx, next) => {
+const authMiddleware = async (ctx, next = null) => {
   try {
     const token = ctx.request.header.authorization;
     const decoded = await jwt.verify(token, config.secret);
@@ -10,8 +10,9 @@ const authMiddleware = async (ctx, next) => {
     ctx.state.user = user;
   } catch (e) {
     ctx.state.user = null;
+    ctx.throw(401, "Unauthorized");
   }
-  return await next();
+  if (next !== null) return await next();
 };
 
 export default authMiddleware;

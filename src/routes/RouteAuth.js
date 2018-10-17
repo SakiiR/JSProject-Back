@@ -5,7 +5,7 @@ import User from "../models/User";
 import config from "../config";
 import { hashPassword, generateSalt, compareHash } from "../utils/hash";
 
-export default class RouteAuth extends Route {
+class RouteAuth extends Route {
   constructor(params) {
     super({ ...params });
   }
@@ -60,3 +60,5 @@ export default class RouteAuth extends Route {
     ctx.throw(201, ctx.i18n.__("User Created"));
   }
 }
+
+export default RouteAuth;

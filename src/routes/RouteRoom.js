@@ -3,12 +3,11 @@ import Route from "./Route";
 import Room from "../models/Room";
 import Message from "../models/Message";
 import { hashPassword, generateSalt } from "../utils/hash";
-import { isAuthenticated, isAuthenticatedRoom } from "../utils/accesses";
 import roomMiddleware from "../middlewares/Room";
+import authMiddleware from "../middlewares/Auth";
 
 @Route.Route({
-  middlewares: [roomMiddleware],
-  accesses: [isAuthenticated]
+  middlewares: [authMiddleware, roomMiddleware]
 })
 class RouteRoom extends Route {
   constructor(params) {
@@ -19,7 +18,10 @@ class RouteRoom extends Route {
     path: ""
   })
   async list(ctx) {
-    const rooms = (await Room.find({}).select("-password -salt")) || [];
+    const rooms =
+      (await Room.find({})
+        .populate("creator", "username")
+        .select("-salt -password")) || [];
     this.sendOk(
       ctx,
       {
@@ -29,9 +31,8 @@ class RouteRoom extends Route {
     );
   }
 
-  @Route.Post({
+  @Route.Get({
     path: "/:id/messages",
-    accesses: [isAuthenticatedRoom],
     bodyType: Types.object().keys({
       password: Types.string()
     })
@@ -39,7 +40,10 @@ class RouteRoom extends Route {
   async messages(ctx) {
     const room = ctx.state.room;
     const room_id = room._id;
-    const messages = (await Message.find({ room: room_id })) || [];
+    const messages =
+      (await Message.find({ room: room_id })
+        .populate("from", "username")
+        .populate("room", "name")) || [];
 
     return this.sendOk(
       ctx,
@@ -67,7 +71,7 @@ class RouteRoom extends Route {
     let salt = null;
     let hash = null;
     if (priv === true) {
-      if (password !== null) {
+      if (password != null) {
         salt = generateSalt();
         hash = await hashPassword(password + salt);
       } else
@@ -87,27 +91,32 @@ class RouteRoom extends Route {
       password: hash,
       salt: salt
     })).toObject();
-    delete result.password, result.salt;
+    delete result.password;
+    delete result.salt;
     if (result === null)
       ctx.throw(500, ctx.i18n.__("Failed to create room ..."));
-    ctx.throw(201, ctx.i18n.__("Room Created!"));
+    ctx.body = { data: result, message: ctx.i18n.__("Room created!") };
+    ctx.status = 201;
   }
 
   @Route.Delete({
-    accesses: [isAuthenticatedRoom],
     path: "/:id"
   })
   async delete(ctx) {
     const { _id: room_id } = ctx.state.room;
 
-    const result = await Room.findByIdAndDelete(room_id);
+    let result = await Room.findByIdAndDelete(room_id);
     if (result === null) ctx.throw(500, ctx.i18n.__("Room can't be deleted"));
+    result = await Message.find({ room: room_id })
+      .remove()
+      .exec();
+    if (result === null)
+      ctx.throw(500, ctx.i18n.__("Room's messages can't be deleted"));
     ctx.throw(201, ctx.i18n.__("Room deleted"));
   }
 
   @Route.Post({
     path: ":id/message",
-    accesses: [isAuthenticatedRoom],
     bodyType: Types.object().keys({
       text: Types.string().required(),
       password: Types.string()
