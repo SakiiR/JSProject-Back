@@ -14,7 +14,6 @@ import {
   RateLimit,
   RateLimitStores
 } from "koa-smart/middlewares";
-const locale = require("koa-locale");
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
@@ -44,13 +43,10 @@ export default class App extends AppBase {
   }
 
   async start() {
-    // TODO pass all models to all routes.
-    // Eg:
-    //    const models = await getModels()
-    //    this.routeParam.models = models
-
-    //locale(this.koaApp);
-
+    this.koaApp.on("error", (err, ctx) => {
+      console.log("An error occurred !");
+      console.log(err, ctx);
+    });
     // we add the relevant middlewares to our API
     super.addMiddlewares([
       cors({ credentials: true }), // add cors headers to the requests
@@ -62,7 +58,15 @@ export default class App extends AppBase {
         modes: ["query", "subdomain", "cookie", "header", "tld"],
         extension: ".json"
       }), // allows us to easily localize the API
-      handleError(), // helps handling error codes
+      // Simple error handling
+      async (ctx, next) => {
+        try {
+          await next();
+        } catch (e) {
+          ctx.status = e.status || 500;
+          ctx.body = { message: e.message || ctx.i18n.__("Unknown error") };
+        }
+      }, // helps handling error codes
       logger(), // gives detailed logs of each request made on the API
       addDefaultBody(), // if no body is present, put an empty object "{}" in its place.
       compress({}), // compresses requests made to the API
