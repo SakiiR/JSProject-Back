@@ -20,9 +20,10 @@ class RouteAuth extends Route {
   async authenticate(ctx) {
     const body = this.body(ctx);
     const user = await User.findOne({ username: body.username });
-    if (user === null) ctx.throw(401, "Bad username or password", "test");
+    if (user === null) ctx.throw(401, ctx.i18n.__("Bad username or password"));
     const matched = compareHash(body.password + user.salt, user.password);
-    if (matched !== true) ctx.throw(401, "Bad username or password", "test");
+    if (matched !== true)
+      ctx.throw(401, ctx.i18n.__("Bad username or password"));
     const token = jwt.sign({ username: user.username }, config.secret, {
       expiresIn: "1h"
     });

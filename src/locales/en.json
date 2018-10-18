@@ -15,5 +15,10 @@
 	"Successfully read rooms": "Successfully read rooms",
 	"Room created!": "Room created!",
 	"Invalid room password": "Invalid room password",
-	"Message sent": "Message sent"
+	"Message sent": "Message sent",
+	"Bad username or password": "Bad username or password",
+	"Unauthorized": "Unauthorized",
+	"Room not found": "Room not found",
+	"No description for room ": "No description for room ",
+	"Room deleted": "Room deleted"
 }

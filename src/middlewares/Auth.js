@@ -10,7 +10,7 @@ const authMiddleware = async (ctx, next = null) => {
     ctx.state.user = user;
   } catch (e) {
     ctx.state.user = null;
-    ctx.throw(401, "Unauthorized");
+    ctx.throw(401, ctx.i18n.__("Unauthorized"));
   }
   if (next !== null) return await next();
 };

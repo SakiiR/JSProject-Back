@@ -56,7 +56,7 @@ class RouteRoom extends Route {
     path: "",
     bodyType: Types.object().keys({
       name: Types.string().required(),
-      description: Types.string().required(),
+      description: Types.string(),
       private: Types.boolean().required(),
       password: Types.string()
     })
