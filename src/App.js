@@ -154,7 +154,17 @@ export default class App extends AppBase {
         modes: ["query", "subdomain", "cookie", "header", "tld"],
         extension: ".json"
       }), // allows us to easily localize the API
-      handleError(), // helps handling error codes
+      async (ctx, next) => {
+        try {
+          await next();
+        } catch (e) {
+          ctx.status = e.status || 500;
+          ctx.body = {
+            message: e.message || e || ctx.i18n.__("Unknown error")
+          };
+          if (ctx.status === 500) console.error(e);
+        }
+      },
       logger(), // gives detailed logs of each request made on the API
       addDefaultBody(), // if no body is present, put an empty object "{}" in its place.
       compress({}), // compresses requests made to the API
