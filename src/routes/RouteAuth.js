@@ -58,7 +58,10 @@ class RouteAuth extends Route {
     });
     if (result === null)
       ctx.throw(500, ctx.i18n.__("Failed to create the user"));
-    ctx.throw(201, ctx.i18n.__("User Created"));
+    ctx.status = 201;
+    ctx.body = {
+      message: ctx.i18n.__("User Created")
+    };
   }
 }
 
