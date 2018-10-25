@@ -28,7 +28,6 @@ async function isRoomAvailable(roomId) {
       return i;
     }
   }
-
   return -1;
 }
 
@@ -231,5 +230,5 @@ socket.ws.use(async ctx => {
 });
 
 socket.listen(config.WS_PORT, async () => {
-  console.log("#BalanceTonPort: *:" + config.WS_PORT);
+  console.log("#Websocket port: *:" + config.WS_PORT);
 });
