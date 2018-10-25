@@ -30,7 +30,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/auth/login.js",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/auth/login.js",
     "groupTitle": "Auth",
     "name": "PostAuthLogin"
   },
@@ -65,7 +65,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/auth/register.js",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/auth/register.js",
     "groupTitle": "Auth",
     "name": "PostAuthRegister"
   },
@@ -80,7 +80,7 @@ define({ "api": [
       }
     ],
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/Index.js",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/Index.js",
     "groupTitle": "Index",
     "name": "Get"
   },
@@ -95,58 +95,9 @@ define({ "api": [
       }
     ],
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/message/-id.js",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/message/-id.js",
     "groupTitle": "Message",
     "name": "DeleteMessageId"
-  },
-  {
-    "type": "post",
-    "url": "/message",
-    "title": "",
-    "group": "Message",
-    "permission": [
-      {
-        "name": "public"
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "from",
-            "description": "<p>It should be a string.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "text",
-            "description": "<p>It should be a string.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "room",
-            "description": "<p>It should be a string.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "password",
-            "description": "<p>It should be a string.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/message.js",
-    "groupTitle": "Message",
-    "name": "PostMessage"
   },
   {
     "type": "delete",
@@ -159,9 +110,37 @@ define({ "api": [
       }
     ],
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id.js",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id.js",
     "groupTitle": "Room",
     "name": "DeleteRoomId"
+  },
+  {
+    "type": "get",
+    "url": "/room/:id/messages",
+    "title": "",
+    "group": "Room",
+    "permission": [
+      {
+        "name": "public"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "password",
+            "description": "<p>It should be a string.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id/messages.js",
+    "groupTitle": "Room",
+    "name": "GetRoomIdMessages"
   },
   {
     "type": "post",
@@ -186,7 +165,7 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "description",
             "description": "<p>It should be a string.</p>"
           },
@@ -208,13 +187,13 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room.js",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room.js",
     "groupTitle": "Room",
     "name": "PostRoom"
   },
   {
     "type": "post",
-    "url": "/room/:id/join",
+    "url": "/room/:id/message",
     "title": "",
     "group": "Room",
     "permission": [
@@ -229,30 +208,9 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "password",
+            "field": "text",
             "description": "<p>It should be a string.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id/join.js",
-    "groupTitle": "Room",
-    "name": "PostRoomIdJoin"
-  },
-  {
-    "type": "post",
-    "url": "/room/:id/messages",
-    "title": "",
-    "group": "Room",
-    "permission": [
-      {
-        "name": "public"
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
+          },
           {
             "group": "Parameter",
             "type": "String",
@@ -264,8 +222,8 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "C:/Users/Pierrick/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id/messages.js",
+    "filename": "/home/sakiir/workspace/EPITECH/JavascriptFullStack/JSProject-Back/node_modules/koa-smart/dist/ApiDocTmp/room/-id/message.js",
     "groupTitle": "Room",
-    "name": "PostRoomIdMessages"
+    "name": "PostRoomIdMessage"
   }
 ] });
