@@ -112,7 +112,8 @@ class RouteRoom extends Route {
       .exec();
     if (result === null)
       ctx.throw(500, ctx.i18n.__("Room's messages can't be deleted"));
-    ctx.throw(201, ctx.i18n.__("Room deleted"));
+    ctx.status = 201;
+    ctx.body = { message: ctx.i18n.__("Room deleted"), room_id };
   }
 
   @Route.Post({
