@@ -113,7 +113,7 @@ class RouteRoom extends Route {
     if (result === null)
       ctx.throw(500, ctx.i18n.__("Room's messages can't be deleted"));
     ctx.status = 201;
-    ctx.body = { message: ctx.i18n.__("Room deleted"), room_id };
+    ctx.body = { message: ctx.i18n.__("Room deleted"), room: ctx.state.room };
   }
 
   @Route.Post({
@@ -133,9 +133,14 @@ class RouteRoom extends Route {
       text: message_text,
       room: room_id
     });
+    const message_id = result._id;
+    const message = await Message.findById(message_id)
+      .populate("from", "username")
+      .populate("room", "name");
     if (result === null)
       return this.send(ctx, 500, ctx.i18n.__("Failed to create the message"));
-    ctx.throw(201, ctx.i18n.__("Message sent"));
+    ctx.status = 201;
+    ctx.body = { message: ctx.i18n.__("Message sent"), message_body: message };
   }
 }
 

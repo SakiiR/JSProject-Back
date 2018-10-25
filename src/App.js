@@ -2,6 +2,7 @@ import { join } from "path";
 import { App as AppBase } from "koa-smart";
 import config from "./config";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import {
   i18n,
   bodyParser,
@@ -9,10 +10,15 @@ import {
   cors,
   helmet,
   addDefaultBody,
+  handleError,
   logger,
   RateLimit,
   RateLimitStores
 } from "koa-smart/middlewares";
+import socketIO from "socket.io";
+import User from "./models/User";
+import Room from "./models/Room";
+import { compareHash } from "./utils/hash";
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
@@ -42,7 +48,102 @@ export default class App extends AppBase {
   }
 
   async start() {
+    // TODO pass all models to all routes.
+    // Eg:
+    //    const models = await getModels()
+    //    this.routeParam.models = models
+
     // we add the relevant middlewares to our API
+
+    const koaApp = this.koaApp;
+    koaApp.io = socketIO(koaApp.server);
+
+    koaApp.io.of(/^\/room-[a-f0-9]{24}$/).on("connection", client => {
+      const newNamespace = client.nsp;
+
+      client.on("authentication", async data => {
+        const { token, room_password } = data;
+        const room_id = newNamespace.name.split("-")[1];
+
+        try {
+          const decoded = await jwt.verify(token, config.secret);
+          client.username = decoded.username;
+          client.authenticated = true;
+        } catch (err) {
+          console.error("Failed to decode token");
+        }
+
+        try {
+          const room = await Room.findById(room_id);
+          if (room === null) client.disconnect(true);
+          if (room.private) {
+            if (!compareHash(room.salt + room_password, room.password)) {
+              client.disconnect(true);
+            }
+          }
+          client.authenticated_room = true;
+        } catch (err) {
+          console.error("Failed to retrieve room id");
+        }
+      });
+
+      client.on("new-message", async data => {
+        newNamespace.clients((err, clients) => {
+          clients.map(client => {
+            const socket = newNamespace.connected[client];
+
+            if (socket.authenticated_room) {
+              socket.emit("new-room", data);
+            }
+          });
+        });
+      });
+    });
+
+    koaApp.io.of("/rooms").on("connection", client => {
+      const roomsNamespace = client.nsp;
+      client.on("authentication", async data => {
+        const { token } = data;
+
+        try {
+          const decoded = await jwt.verify(token, config.secret);
+          client.username = decoded.username;
+          client.authenticated = true;
+        } catch (err) {
+          console.error("Failed to decode token");
+        }
+      });
+
+      /**
+       * Supposed to send the new created room data.
+       */
+      client.on("new-room", async data => {
+        if (client.authenticated) {
+          roomsNamespace.clients((err, clients) => {
+            clients.map(client => {
+              const socket = roomsNamespace.connected[client];
+
+              socket.emit("new-room", data);
+            });
+          });
+        }
+      });
+
+      client.on("removed-room", async data => {
+        if (client.authenticated) {
+          roomsNamespace.clients((err, clients) => {
+            clients.map(client => {
+              const socket = roomsNamespace.connected[client];
+
+              socket.emit("removed-room", data);
+            });
+          });
+        }
+      });
+    });
+
+    koaApp.io.listen(4242);
+
     super.addMiddlewares([
       cors({ credentials: true }), // add cors headers to the requests
       helmet(), // adds various security headers to our API's responses
@@ -53,18 +154,7 @@ export default class App extends AppBase {
         modes: ["query", "subdomain", "cookie", "header", "tld"],
         extension: ".json"
       }), // allows us to easily localize the API
-      // Simple error handling
-      async (ctx, next) => {
-        try {
-          await next();
-        } catch (e) {
-          ctx.status = e.status || 500;
-          ctx.body = {
-            message: e.message || e || ctx.i18n.__("Unknown error")
-          };
-          if (ctx.status === 500) console.error(e);
-        }
-      }, // helps handling error codes
+      handleError(), // helps handling error codes
       logger(), // gives detailed logs of each request made on the API
       addDefaultBody(), // if no body is present, put an empty object "{}" in its place.
       compress({}), // compresses requests made to the API
