@@ -103,8 +103,10 @@ class RouteRoom extends Route {
     path: "/:id"
   })
   async delete(ctx) {
-    const { _id: room_id } = ctx.state.room;
-
+    const { _id: room_id, creator } = ctx.state.room;
+    const { user } = ctx.state;
+    if (user._id.toString() !== creator._id.toString())
+      ctx.throw(401, ctx.i18n.__("You don't own this room!"));
     let result = await Room.findByIdAndDelete(room_id);
     if (result === null) ctx.throw(500, ctx.i18n.__("Room can't be deleted"));
     result = await Message.find({ room: room_id })
