@@ -16,7 +16,8 @@ const messageSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Room",
     required: true
-  }
+  },
+  created_at: { type: Date, default: Date.now }
 });
 
 export default mongoose.model("Message", messageSchema);
