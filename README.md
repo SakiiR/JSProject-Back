@@ -57,6 +57,8 @@ Clone this repository, remove the `.git` directory, run `git init`, and adjust d
 
 Before installing, [download and install Node.js](https://nodejs.org/en/download/). **Node.js v8.9.1** or higher will be required.
 
+It is required to run a mongo on `localhost:27017` to start the project.
+
 - **Install package**
   `npm install`
 - **Run Dev**
@@ -67,6 +69,7 @@ Before installing, [download and install Node.js](https://nodejs.org/en/download
   `yarn build-prod OR npm run build-prod`
 - **Run Prod**
   `yarn prod OR npm run prod`
+
 
 ## Router with decorator
 
